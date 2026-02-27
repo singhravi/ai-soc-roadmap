@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-SOC Implementation Roadmap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            padding: 20px;
+        }
+        
+        .roadmap-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            min-height: 700px;
+            position: relative;
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .slide h1 {
+            color: #1e3c72;
+            font-size: 48px;
+            margin-bottom: 25px;
+            border-bottom: 5px solid #667eea;
+            padding-bottom: 20px;
+        }
+        
+        .slide h2 {
+            color: #667eea;
+            font-size: 36px;
+            margin: 30px 0 20px 0;
+        }
+        
+        .slide h3 {
+            color: #2a5298;
+            font-size: 26px;
+            margin: 20px 0 15px 0;
+        }
+        
+        /* Title Slide */
+        .title-slide {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 700px;
+        }
+        
+        .title-slide h1 {
+            color: white;
+            font-size: 64px;
+            border: none;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .title-slide .subtitle {
+            font-size: 32px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        
+        .title-slide .meta {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-top: 30px;
+        }
+        
+        /* Timeline Styles */
+        .phase-timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+        
+        .phase-block {
+            display: flex;
+            margin-bottom: 40px;
+            position: relative;
+            align-items: flex-start;
+        }
+        
+        .phase-marker {
+            min-width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 30px;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .phase-marker .phase-name {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .phase-marker .phase-duration {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .phase-marker .phase-months {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .phase-content {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .phase-content h3 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .phase-content ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .phase-content li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .phase-content li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-size: 20px;
+        }
+        
+        /* Gantt Chart Style */
+        .gantt-container {
+            overflow-x: auto;
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .gantt-chart {
+            min-width: 1000px;
+        }
+        
+        .gantt-header {
+            display: grid;
+            grid-template-columns: 250px repeat(18, 1fr);
+            gap: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .gantt-month {
+            background: #667eea;
+            color: white;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        
+        .gantt-row {
+            display: grid;
+            grid-template-columns: 250px repeat(18, 1fr);
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .gantt-label {
+            background: #2a5298;
+            color: white;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .gantt-cell {
+            background: #e9ecef;
+            border-radius: 3px;
+        }
+        
+        .gantt-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        /* Milestone Cards */
+        .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .milestone-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .milestone-card h4 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        
+        .milestone-card .milestone-date {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+        
+        .milestone-card .milestone-desc {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* Deliverables List */
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .deliverable-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .deliverable-box h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .deliverable-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .deliverable-box li {
+            padding: 8px 0;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .deliverable-box li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* Resource Table */
+        .resource-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .resource-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .resource-table th {
+            padding: 15px;
+            text-align: left;
+            font-size: 16px;
+        }
+        
+        .resource-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 15px;
+        }
+        
+        .resource-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Risk Matrix */
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .risk-card {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffc107;
+        }
+        
+        .risk-card.high {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .risk-card h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .risk-card.high h4 {
+            color: #721c24;
+        }
+        
+        .risk-card .risk-level {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .risk-card .risk-level.medium {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .risk-card .risk-level.high {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .risk-card p {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .risk-card .mitigation {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+        
+        /* Success Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .metric-card .metric-value {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .metric-card .metric-label {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+        
+        /* Call to Action */
+        .cta-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .cta-box h3 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .cta-box p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .slide {
+                page-break-after: always;
+                margin-bottom: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="roadmap-container">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <h1>AI-Enhanced SOC</h1>
+            <div class="subtitle">18-Month Implementation Roadmap</div>
+            <div class="meta">
+                <p>State Data Centre</p>
+                <p style="margin-top: 15px;">Next Generation Cyber Defense Platform</p>
+                <p style="margin-top: 30px;">[Date]</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Executive Overview -->
+        <div class="slide">
+            <div class="slide-number">2</div>
+            <h1>Executive Overview</h1>
+            
+            <h2>Implementation at a Glance</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total Duration</div>
+                    <div class="metric-value">18</div>
+                    <div class="metric-label">Months</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Major Phases</div>
+                    <div class="metric-value">8</div>
+                    <div class="metric-label">Phases</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Key Milestones</div>
+                    <div class="metric-value">24</div>
+                    <div class="metric-label">Deliverables</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Go-Live Target</div>
+                    <div class="metric-value">M16</div>
+                    <div class="metric-label">Month 16</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;">Critical Success Factors</h2>
+            <div class="deliverables-grid">
+                <div class="deliverable-box">
+                    <h4>🎯 Clear Objectives</h4>
+                    <ul>
+                        <li>Well-defined scope and goals</li>
+                        <li>Measurable success criteria</li>
+                        <li>Stakeholder alignment</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>👥 Right Team</h4>
+                    <ul>
+                        <li>Experienced project leadership</li>
+                        <li>AI/ML engineering expertise</li>
+                        <li>Security domain knowledge</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>💰 Adequate Funding</h4>
+                    <ul>
+                        <li>Timely budget allocation</li>
+                        <li>Contingency reserves</li>
+                        <li>Flexible procurement</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>🔄 Agile Approach</h4>
+                    <ul>
+                        <li>Iterative implementation</li>
+                        <li>Regular checkpoints</li>
+                        <li>Adaptive planning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Master Timeline -->
+        <div class="slide">
+            <div class="slide-number">3</div>
+            <h1>Master Implementation Timeline</h1>
+            
+            <div class="gantt-container">
+                <div class="gantt-chart">
+                    <div class="gantt-header">
+                        <div style="background: #2a5298;" class="gantt-month">Phase/Activity</div>
+                        <div class="gantt-month">M1</div>
+                        <div class="gantt-month">M2</div>
+                        <div class="gantt-month">M3</div>
+                        <div class="gantt-month">M4</div>
+                        <div class="gantt-month">M5</div>
+                        <div class="gantt-month">M6</div>
+                        <div class="gantt-month">M7</div>
+                        <div class="gantt-month">M8</div>
+                        <div class="gantt-month">M9</div>
+                        <div class="gantt-month">M10</div>
+                        <div class="gantt-month">M11</div>
+                        <div class="gantt-month">M12</div>
+                        <div class="gantt-month">M13</div>
+                        <div class="gantt-month">M14</div>
+                        <div class="gantt-month">M15</div>
+                        <div class="gantt-month">M16</div>
+                        <div class="gantt-month">M17</div>
+                        <div class="gantt-month">M18</div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 1: Planning</div>
+                        <div class="gantt-cell"><div class="gantt-bar">Plan</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Plan</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 2: Infrastructure</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Build</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Build</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Build</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 3: AI Platform</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Deploy</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Deploy</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Deploy</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Deploy</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 4: ML Models</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Train</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Train</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Train</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Train</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 5: Integration</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Integrate</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Integrate</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Integrate</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 6: Team Building</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Hire</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Train</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Train</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 7: Pilot</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Pilot</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Pilot</div></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-label">Phase 8: Go-Live</div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Launch</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Optimize</div></div>
+                        <div class="gantt-cell"><div class="gantt-bar">Optimize</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cta-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h3>Parallel Execution Strategy</h3>
+                <p>Multiple phases run concurrently to optimize delivery timeline and ensure 18-month completion</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Phase 1 - Planning & AI Strategy -->
+        <div class="slide">
+            <div class="slide-number">4</div>
+            <h1>Phase 1: Planning & AI Strategy</h1>
+            <h2 style="color: #667eea;">Months 1-2</h2>
+            
+            <div class="phase-timeline">
+                <div class="phase-block">
+                    <div class="phase-marker">
+                        <div class="phase-name">PHASE 1</div>
+                        <div class="phase-duration">2</div>
+                        <div class="phase-months">MONTHS</div>
+                    </div>
+                    <div class="phase-content">
+                        <h3>Strategic Planning & Foundation</h3>
+                        <ul>
+                            <li><strong>Detailed Requirement Analysis:</strong> Security needs, AI use cases, threat landscape assessment</li>
+                            <li><strong>AI-Enhanced Architecture Design:</strong> ML model strategy, data pipeline design, infrastructure blueprint</li>
+                            <li><strong>Data Strategy Development:</strong> Security data lake design, data governance framework, ML data requirements</li>
+                            <li><strong>Vendor Evaluation & Selection:</strong> RFP preparation, AI-capable vendor assessment, proof-of-concept</li>
+                            <li><strong>Site Preparation Planning:</strong> Facility layout design, power/cooling requirements for GPUs</li>
+                            <li><strong>AI Ethics & Governance Framework:</strong> Responsible AI guidelines, bias detection protocols</li>
+                            <li><strong>Project Management Setup:</strong> PMO establishment, governance structure, communication plan</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Key Deliverables</h2>
+            <div class="deliverables-grid">
+                <div class="deliverable-box">
+                    <h4>📋 Technical Documents</h4>
+                    <ul>
+                        <li>AI-SOC Architecture Document</li>
+                        <li>ML Model Strategy & Roadmap</li>
+                        <li>Security Data Lake Design</li>
+                        <li>Infrastructure Requirements Spec</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>📊 Project Plans</h4>
+                    <ul>
+                        <li>Detailed Project Schedule</li>
+                        <li>Resource Allocation Plan</li>
+                        <li>Risk Management Plan</li>
+                        <li>Quality Assurance Plan</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>💼 Procurement</h4>
+                    <ul>
+                        <li>RFP Documents (AI-SIEM, UEBA)</li>
+                        <li>Vendor Evaluation Matrix</li>
+                        <li>Contract Templates</li>
+                        <li>Budget Breakdown</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>🎯 Strategic</h4>
+                    <ul>
+                        <li>AI Use Case Library (50+ cases)</li>
+                        <li>AI Ethics Framework</li>
+                        <li>Governance Charter</li>
+                        <li>Success Metrics Definition</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Critical Activities</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Owner</th>
+                        <th>Duration</th>
+                        <th>Dependencies</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Requirements Workshop</td>
+                        <td>SOC Manager + Consultants</td>
+                        <td>Week 1-2</td>
+                        <td>Budget Approval</td>
+                    </tr>
+                    <tr>
+                        <td>AI Architecture Design</td>
+                        <td>Security Architect + ML Lead</td>
+                        <td>Week 2-4</td>
+                        <td>Requirements</td>
+                    </tr>
+                    <tr>
+                        <td>Vendor RFP Release</td>
+                        <td>Procurement Team</td>
+                        <td>Week 3-8</td>
+                        <td>Specifications</td>
+                    </tr>
+                    <tr>
+                        <td>Site Survey & Planning</td>
+                        <td>Facilities Team</td>
+                        <td>Week 2-6</td>
+                        <td>Architecture</td>
+                    </tr>
+                    <tr>
+                        <td>AI Ethics Framework</td>
+                        <td>Legal + AI Lead</td>
+                        <td>Week 4-8</td>
+                        <td>Policy Review</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 5: Phase 2 - Infrastructure Setup -->
+        <div class="slide">
+            <div class="slide-number">5</div>
+            <h1>Phase 2: Infrastructure Setup</h1>
+            <h2 style="color: #667eea;">Months 3-5</h2>
+            
+            <div class="phase-timeline">
+                <div class="phase-block">
+                    <div class="phase-marker">
+                        <div class="phase-name">PHASE 2</div>
+                        <div class="phase-duration">3</div>
+                        <div class="phase-months">MONTHS</div>
+                    </div>
+                    <div class="phase-content">
+                        <h3>Physical & IT Infrastructure Deployment</h3>
+                        <ul>
+                            <li><strong>SOC Facility Construction:</strong> Civil work, false flooring, enhanced HVAC for GPU cooling</li>
+                            <li><strong>Power Infrastructure:</strong> 75 KVA UPS, redundant power distribution, GPU power circuits</li>
+                            <li><strong>GPU Server Procurement:</strong> 6x GPU servers with NVIDIA A100/H100, high-memory servers</li>
+                            <li><strong>Network Infrastructure:</strong> 100GbE core switches, TAPs for monitoring, dedicated AI network</li>
+                            <li><strong>Storage Systems:</strong> 500TB security data lake, high-performance SAN/NAS</li>
+                            <li><strong>Display Systems:</strong> 4x4 video wall, analyst workstations, AI operations workspace</li>
+                            <li><strong>Security & Access Control:</strong> Biometric access, CCTV with AI analytics, environmental sensors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Infrastructure Components Timeline</h2>
+            <div class="milestone-grid">
+                <div class="milestone-card">
+                    <h4>🏗️ Facility Ready</h4>
+                    <div class="milestone-date">End of Month 4</div>
+                    <div class="milestone-desc">SOC room construction complete with enhanced cooling, power, and physical security ready for equipment installation</div>
+                </div>
+                <div class="milestone-card">
+                    <h4>🖥️ GPU Servers Deployed</h4>
+                    <div class="milestone-date">End of Month 5</div>
+                    <div class="milestone-desc">All GPU servers installed, configured, and tested. ML training environment operational</div>
+                </div>
+                <div class="milestone-card">
+                    <h4>🌐 Network Live</h4>
+                    <div class="milestone-date">End of Month 5</div>
+                    <div class="milestone-desc">100GbE network operational, TAPs installed, network monitoring active, AI data pipeline ready</div>
+                </div>
+                <div class="milestone-card">
+                    <h4>💾 Data Lake Ready</h4>
+                    <div class="milestone-date">End of Month 5</div>
+                    <div class="milestone-desc">Security data lake deployed, initial data ingestion configured, storage performance validated</div>
+                </div>
+            </div>
+
+            <h2>Procurement & Installation Schedule</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Procurement</th>
+                        <th>Installation</th>
+                        <th>Testing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GPU Servers (6 units)</td>
+                        <td>Month 3</td>
+                        <td>Month 4-5</td>
+                        <td>Month 5</td>
+                    </tr>
+                    <tr>
+                        <td>Storage Systems (500TB)</td>
+                        <td>Month 3</td>
+                        <td>Month 4</td>
+                        <td>Month 5</td>
+                    </tr>
+                    <tr>
+                        <td>Network Equipment</td>
+                        <td>Month 3</td>
+                        <td>Month 4</td>
+                        <td>Month 5</td>
+                    </tr>
+                    <tr>
+                        <td>Video Wall & Displays</td>
+                        <td>Month 3</td>
+                        <td>Month 5</td>
+                        <td>Month 5</td>
+                    </tr>
+                    <tr>
+                        <td>Workstations (35 units)</td>
+                        <td>Month 4</td>
+                        <td>Month 5</td>
+                        <td>Month 5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 6: Phase 3 - AI Platform Deployment -->
+        <div class="slide">
+            <div class="slide-number">6</div>
+            <h1>Phase 3: AI Platform Deployment</h1>
+            <h2 style="color: #667eea;">Months 6-9</h2>
+            
+            <div class="phase-timeline">
+                <div class="phase-block">
+                    <div class="phase-marker">
+                        <div class="phase-name">PHASE 3</div>
+                        <div class="phase-duration">4</div>
+                        <div class="phase-months">MONTHS</div>
+                    </div>
+                    <div class="phase-content">
+                        <h3>Core Security & AI Platform Installation</h3>
+                        <ul>
+                            <li><strong>AI-Enhanced SIEM:</strong> Deploy Splunk/QRadar with ML modules, configure log sources</li>
+                            <li><strong>Security Data Lake:</strong> Hadoop/Spark cluster setup, data pipeline development</li>
+                            <li><strong>ML Platform (MLOps):</strong> Kubeflow/MLflow deployment, model registry, feature store</li>
+                            <li><strong>UEBA Platform:</strong> Behavioral analytics deployment, baseline establishment</li>
+                            <li><strong>AI-SOAR:</strong> Orchestration platform setup, initial playbook development</li>
+                            <li><strong>Threat Intelligence:</strong> AI-TIP deployment, feed integration, NLP configuration</li>
+                            <li><strong>Network Security:</strong> AI-powered NGFW, NDR platform, deception technology</li>
+                            <li><strong>Endpoint Protection:</strong> ML-based EDR deployment to initial assets</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Platform Deployment Sequence</h2>
+            <div class="milestone-grid">
+                <div class="milestone-card">
+                    <h4>Month 6: Foundation</h4>
+                    <div class="milestone-desc">
+                        • AI-SIEM installed<br>
+                        • Data lake operational<br>
+                        • Initial log ingestion<br>
+                        • Network TAPs configured
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>Month 7: Analytics</h4>
+                    <div class="milestone-desc">
+                        • UEBA platform deployed<br>
+                        • ML platform operational<br>
+                        • Behavioral baselines started<br>
+                        • Threat intel feeds active
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>Month 8: Protection</h4>
+                    <div class="milestone-desc">
+                        • AI-NGFW deployed<br>
+                        • NDR platform live<br>
+                        • EDR on critical assets<br>
+                        • Deception tech active
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>Month 9: Automation</h4>
+                    <div class="milestone-desc">
+                        • AI-SOAR operational<br>
+                        • Automated playbooks<br>
+                        • Integration complete<br>
+                        • Initial ML models deployed
+                    </div>
+                </div>
+            </div>
+
+            <h2>Integration Architecture</h2>
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; margin: 25px 0;">
+                <h3 style="text-align: center; color: #667eea; margin-bottom: 25px;">AI Security Platform Integration Flow</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 3px solid #667eea;">
+                        <strong style="color: #667eea; display: block; margin-bottom: 10px;">Data Collection</strong>
+                        Network TAPs<br>
+                        Log Collectors<br>
+                        Endpoint Agents<br>
+                        Cloud APIs
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 3px solid #764ba2;">
+                        <strong style="color: #764ba2; display: block; margin-bottom: 10px;">AI Processing</strong>
+                        Data Lake<br>
+                        ML Models<br>
+                        SIEM Correlation<br>
+                        UEBA Analysis
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 3px solid #28a745;">
+                        <strong style="color: #28a745; display: block; margin-bottom: 10px;">Response</strong>
+                        AI-SOAR<br>
+                        Automated Actions<br>
+                        Analyst Alerts<br>
+                        Threat Intelligence
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Phase 4 - ML Model Development -->
+        <div class="slide">
+            <div class="slide-number">7</div>
+            <h1>Phase 4: ML Model Development</h1>
+            <h2 style="color: #667eea;">Months 8-11</h2>
+            
+            <div class="phase-timeline">
+                <div class="phase-block">
+                    <div class="phase-marker">
+                        <div class="phase-name">PHASE 4</div>
+                        <div class="phase-duration">4</div>
+                        <div class="phase-months">MONTHS</div>
+                    </div>
+                    <div class="phase-content">
+                        <h3>Custom ML Model Training & Optimization</h3>
+                        <ul>
+                            <li><strong>Threat Detection Models:</strong> Malware classification, anomaly detection, APT identification</li>
+                            <li><strong>Phishing Detection:</strong> NLP models for email analysis, URL reputation, brand impersonation</li>
+                            <li><strong>User Behavior Models:</strong> UEBA baseline establishment, peer group analysis, risk scoring</li>
+                            <li><strong>Network Anomaly Detection:</strong> Traffic pattern analysis, protocol anomalies, lateral movement</li>
+                            <li><strong>Vulnerability Prediction:</strong> Exploitability scoring, patch prioritization, risk assessment</li>
+                            <li><strong>Incident Classification:</strong> Auto-categorization, severity prediction, response recommendation</li>
+                            <li><strong>Model Validation & Testing:</strong> Accuracy testing, false positive tuning, A/B testing</li>
+                            <li><strong>MLOps Pipeline:</strong> Automated retraining, model versioning, drift detection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>ML Model Development Roadmap</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Model Type</th>
+                        <th>Training Period</th>
+                        <th>Data Required</th>
+                        <th>Target Accuracy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Malware Classification (Deep Learning)</td>
+                        <td>Month 8-9</td>
+                        <td>1M+ samples</td>
+                        <td>&gt;95%</td>
+                    </tr>
+                    <tr>
+                        <td>Phishing Detection (NLP)</td>
+                        <td>Month 8-9</td>
+                        <td>500K emails</td>
+                        <td>&gt;98%</td>
+                    </tr>
+                    <tr>
+                        <td>Network Anomaly (Unsupervised)</td>
+                        <td>Month 9-10</td>
+                        <td>90 days traffic</td>
+                        <td>&gt;90%</td>
+                    </tr>
+                    <tr>
+                        <td>User Behavior Baseline (UEBA)</td>
+                        <td>Month 9-11</td>
+                        <td>60 days activity</td>
+                        <td>&gt;85%</td>
+                    </tr>
+                    <tr>
+                        <td>Vulnerability Prediction</td>
+                        <td>Month 10-11</td>
+                        <td>Historical CVEs</td>
+                        <td>&gt;80%</td>
+                    </tr>
+                    <tr>
+                        <td>Incident Auto-Classification</td>
+                        <td>Month 10-11</td>
+                        <td>Historical incidents</td>
+                        <td>&gt;92%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Model Development Process</h2>
+            <div class="deliverables-grid">
+                <div class="deliverable-box">
+                    <h4>1️⃣ Data Collection</h4>
+                    <ul>
+                        <li>Historical security data</li>
+                        <li>Public threat databases</li>
+                        <li>Labeled datasets</li>
+                        <li>Real-time logs</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>2️⃣ Feature Engineering</h4>
+                    <ul>
+                        <li>Feature extraction</li>
+                        <li>Data preprocessing</li>
+                        <li>Feature selection</li>
+                        <li>Dimensionality reduction</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>3️⃣ Model Training</h4>
+                    <ul>
+                        <li>Algorithm selection</li>
+                        <li>Hyperparameter tuning</li>
+                        <li>Cross-validation</li>
+                        <li>Performance optimization</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>4️⃣ Deployment</h4>
+                    <ul>
+                        <li>Model packaging</li>
+                        <li>Integration testing</li>
+                        <li>Shadow mode validation</li>
+                        <li>Production rollout</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Phase 5 - Integration & Automation -->
+        <div class="slide">
+            <div class="slide-number">8</div>
+            <h1>Phase 5: Integration & Automation</h1>
+            <h2 style="color: #667eea;">Months 10-12</h2>
+            
+            <div class="phase-timeline">
+                <div class="phase-block">
+                    <div class="phase-marker">
+                        <div class="phase-name">PHASE 5</div>
+                        <div class="phase-duration">3</div>
+                        <div class="phase-months">MONTHS</div>
+                    </div>
+                    <div class="phase-content">
+                        <h3>End-to-End Integration & Workflow Automation</h3>
+                        <ul>
+                            <li><strong>Cross-Platform Integration:</strong> SIEM ↔ SOAR ↔ EDR ↔ UEBA ↔ TIP bidirectional integration</li>
+                            <li><strong>Automated Response Playbooks:</strong> 50+ playbooks for common incidents, AI-driven decision trees</li>
+                            <li><strong>Threat Intelligence Automation:</strong> Auto-enrichment, IoC correlation, threat actor tracking</li>
+                            <li><strong>Alert Orchestration:</strong> Intelligent alert routing, auto-escalation, context enrichment</li>
+                            <li><strong>Dashboard Development:</strong> Real-time AI-powered dashboards, executive reporting, KPI tracking</li>
+                            <li><strong>API Integration:</strong> Connect to enterprise systems, cloud platforms, ticketing systems</li>
+                            <li><strong>Workflow Testing:</strong> End-to-end scenario testing, performance validation, stress testing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Automation Capabilities</h2>
+            <div class="milestone-grid">
+                <div class="milestone-card">
+                    <h4>🤖 Threat Detection</h4>
+                    <div class="milestone-desc">
+                        • Automated threat hunting<br>
+                        • ML-based anomaly alerts<br>
+                        • IoC auto-matching<br>
+                        • 95% detection accuracy
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>⚡ Incident Response</h4>
+                    <div class="milestone-desc">
+                        • Auto-containment<br>
+                        • Endpoint isolation<br>
+                        • User account suspension<br>
+                        • 70% auto-resolution
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>📊 Enrichment</h4>
+                    <div class="milestone-desc">
+                        • Context gathering<br>
+                        • Threat intel lookup<br>
+                        • Asset information<br>
+                        • User behavior history
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>📈 Reporting</h4>
+                    <div class="milestone-desc">
+                        • Auto-generated reports<br>
+                        • Real-time dashboards<br>
+                        • Compliance reporting<br>
+                        • Executive summaries
+                    </div>
+                </div>
+            </div>
+
+            <h2>Integration Matrix</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Integration</th>
+                        <th>Purpose</th>
+                        <th>Automation Level</th>
+                        <th>Status Timeline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SIEM ↔ SOAR</td>
+                        <td>Alert-to-action automation</td>
+                        <td>Fully Automated</td>
+                        <td>Month 10</td>
+                    </tr>
+                    <tr>
+                        <td>SOAR ↔ EDR</td>
+                        <td>Endpoint response actions</td>
+                        <td>Fully Automated</td>
+                        <td>Month 11</td>
+                    </tr>
+                    <tr>
+                        <td>UEBA ↔ SIEM</td>
+                        <td>Behavioral alert correlation</td>
+                        <td>Semi-Automated</td>
+                        <td>Month 11</td>
+                    </tr>
+                    <tr>
+                        <td>TIP ↔ All Platforms</td>
+                        <td>Threat intelligence enrichment</td>
+                        <td>Fully Automated</td>
+                        <td>Month 11</td>
+                    </tr>
+                    <tr>
+                        <td>CMDB ↔ SIEM</td>
+                        <td>Asset context enrichment</td>
+                        <td>Automated</td>
+                        <td>Month 12</td>
+                    </tr>
+                    <tr>
+                        <td>ITSM ↔ SOAR</td>
+                        <td>Ticket management</td>
+                        <td>Automated</td>
+                        <td>Month 12</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 9: Phase 6 - Team Building -->
+        <div class="slide">
+            <div class="slide-number">9</div>
+            <h1>Phase 6: Staffing & Training</h1>
+            <h2 style="color: #667eea;">Months 11-13</h2>
+            
+            <div class="phase-timeline">
+                <div class="phase-block">
+                    <div class="phase-marker">
+                        <div class="phase-name">PHASE 6</div>
+                        <div class="phase-duration">3</div>
+                        <div class="phase-months">MONTHS</div>
+                    </div>
+                    <div class="phase-content">
+                        <h3>Team Recruitment, Training & Capability Building</h3>
+                        <ul>
+                            <li><strong>Strategic Hiring:</strong> SOC Manager, AI Lead, ML Engineers (7), Security Architects (4)</li>
+                            <li><strong>Operations Team:</strong> Security Engineers (10), Analysts (19), Support Staff (5)</li>
+                            <li><strong>AI/ML Training:</strong> Deep learning for security, MLOps, model development</li>
+                            <li><strong>Security Tool Training:</strong> AI-SIEM, UEBA, SOAR, EDR platform certifications</li>
+                            <li><strong>Incident Response Training:</strong> AI-assisted investigation, automated response procedures</li>
+                            <li><strong>Threat Hunting Bootcamp:</strong> AI-powered hunting, hypothesis development</li>
+                            <li><strong>Simulated Exercises:</strong> Red team vs AI-SOC, incident response drills</li>
+                            <li><strong>Knowledge Transfer:</strong> Documentation, standard operating procedures, playbook training</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Hiring & Training Timeline</h2>
+            <div class="milestone-grid">
+                <div class="milestone-card">
+                    <h4>Month 11: Leadership</h4>
+                    <div class="milestone-desc">
+                        • SOC Manager hired<br>
+                        • AI Strategy Lead onboard<br>
+                        • Lead ML Engineer joins<br>
+                        • Leadership training begins
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>Month 11-12: Core Team</h4>
+                    <div class="milestone-desc">
+                        • ML Engineers (6)<br>
+                        • Security Architects (4)<br>
+                        • Senior Engineers (4)<br>
+                        • Intensive training program
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>Month 12-13: Operations</h4>
+                    <div class="milestone-desc">
+                        • Security Engineers (6)<br>
+                        • Security Analysts (19)<br>
+                        • Support Staff (5)<br>
+                        • Tool training complete
+                    </div>
+                </div>
+                <div class="milestone-card">
+                    <h4>Month 13: Certification</h4>
+                    <div class="milestone-desc">
+                        • Platform certifications<br>
+                        • AI/ML courses complete<br>
+                        • Incident response drills<br>
+                        • Team fully operational
+                    </div>
+                </div>
+            </div>
+
+            <h2>Training Program</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Training Module</th>
+                        <th>Target Audience</th>
+                        <th>Duration</th>
+                        <th>Certification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI for Cybersecurity Fundamentals</td>
+                        <td>All Team</td>
+                        <td>2 weeks</td>
+                        <td>Internal</td>
+                    </tr>
+                    <tr>
+                        <td>ML Model Development for Security</td>
+                        <td>ML Engineers</td>
+                        <td>4 weeks</td>
+                        <td>AWS/Azure ML</td>
+                    </tr>
+                    <tr>
+                        <td>AI-Enhanced SIEM (Splunk/QRadar)</td>
+                        <td>Analysts + Engineers</td>
+                        <td>3 weeks</td>
+                        <td>Vendor Cert</td>
+                    </tr>
+                    <tr>
+                        <td>UEBA & Behavioral Analytics</td>
+                        <td>Analysts + Architects</td>
+                        <td>2 weeks</td>
+                        <td>Platform Cert</td>
+                    </tr>
+                    <tr>
+                        <td>AI-SOAR Orchestration</td>
+                        <td>Engineers</td>
+                        <td>2 weeks</td>
+                        <td>SOAR Admin</td>
+                    </tr>
+                    <tr>
+                        <td>Threat Hunting with AI</td>
+                        <td>Senior Analysts</td>
+                        <td>3 weeks</td>
+                        <td>GCIH/GCIA</td>
+                    </tr>
+                    <tr>
+                        <td>AI Red Team Simulation</td>
+                        <td>All SOC Team</td>
+                        <td>1 week</td>
+                        <td>Internal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 10: Phases 7-8 - Pilot & Go-Live -->
+        <div class="slide">
+            <div class="slide-number">10</div>
+            <h1>Phases 7-8: Pilot & Full Deployment</h1>
+            <h2 style="color: #667eea;">Months 14-18</h2>
+            
+            <h2>Phase 7: Pilot Operations (Months 14-15)</h2>
+            <div class="phase-content" style="margin-bottom: 30px;">
+                <h3>Controlled Pilot with Limited Scope</h3>
+                <ul>
+                    <li><strong>Pilot Scope:</strong> Monitor State Data Centre infrastructure only (500 assets)</li>
+                    <li><strong>Shadow Mode:</strong> AI models run alongside traditional detection for validation</li>
+                    <li><strong>Model Refinement:</strong> Tune ML models based on real-world data, reduce false positives</li>
+                    <li><strong>Performance Testing:</strong> Validate throughput, latency, scalability under load</li>
+                    <li><strong>Process Validation:</strong> Test incident response workflows, escalation procedures</li>
+                    <li><strong>Team Readiness:</strong> 24x7 operations dry run, shift handover procedures</li>
+                    <li><strong>Stakeholder Demos:</strong> Showcase capabilities to leadership and departments</li>
+                </ul>
+            </div>
+
+            <h2>Phase 8: Full Deployment (Months 16-18)</h2>
+            <div class="phase-content">
+                <h3>Progressive Rollout to Production</h3>
+                <ul>
+                    <li><strong>Month 16 - Go-Live:</strong> Official launch with SDC + 5 pilot departments</li>
+                    <li><strong>Progressive Onboarding:</strong> Add 10 departments per month, 5000+ endpoints by Month 18</li>
+                    <li><strong>Continuous Optimization:</strong> ML model retraining weekly, performance tuning</li>
+                    <li><strong>Advanced Features:</strong> Enable threat hunting, deception tech, advanced analytics</li>
+                    <li><strong>Knowledge Base:</strong> Build incident playbook library, lessons learned database</li>
+                    <li><strong>Stakeholder Reporting:</strong> Monthly security reports, quarterly reviews</li>
+                    <li><strong>Stabilization:</strong> Final adjustments, handover to operations, close project</li>
+                </ul>
+            </div>
+
+            <h2>Rollout Schedule</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Scope</th>
+                        <th>Assets</th>
+                        <th>Key Activities</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>14-15</td>
+                        <td>Pilot - SDC Only</td>
+                        <td>500</td>
+                        <td>Shadow mode, model tuning, validation</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>Go-Live + Wave 1</td>
+                        <td>1,500</td>
+                        <td>Official launch, first 5 departments</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>Wave 2 Expansion</td>
+                        <td>3,500</td>
+                        <td>Add 10 departments, advanced features</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>Full Deployment</td>
+                        <td>5,000+</td>
+                        <td>All departments, project closure</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="cta-box" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                <h3>🎯 Target Go-Live: Month 16</h3>
+                <p>AI-Enhanced SOC operational with proven capabilities, protecting critical state infrastructure</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Key Milestones -->
+        <div class="slide">
+            <div class="slide-number">11</div>
+            <h1>Critical Milestones & Gates</h1>
+            
+            <h2>Project Milestones</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Milestone</th>
+                        <th>Month</th>
+                        <th>Success Criteria</th>
+                        <th>Gate Review</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>M1: Project Kickoff</td>
+                        <td>0</td>
+                        <td>Budget approved, PMO established, contracts signed</td>
+                        <td>Executive</td>
+                    </tr>
+                    <tr>
+                        <td>M2: Architecture Approved</td>
+                        <td>2</td>
+                        <td>Technical design finalized, vendors selected</td>
+                        <td>Technical</td>
+                    </tr>
+                    <tr>
+                        <td>M3: Infrastructure Ready</td>
+                        <td>5</td>
+                        <td>SOC facility operational, all hardware installed</td>
+                        <td>Facilities</td>
+                    </tr>
+                    <tr>
+                        <td>M4: SIEM Operational</td>
+                        <td>7</td>
+                        <td>AI-SIEM collecting logs, basic correlation active</td>
+                        <td>Technical</td>
+                    </tr>
+                    <tr>
+                        <td>M5: Data Lake Live</td>
+                        <td>8</td>
+                        <td>Security data lake ingesting 1TB/day</td>
+                        <td>Technical</td>
+                    </tr>
+                    <tr>
+                        <td>M6: First ML Model</td>
+                        <td>9</td>
+                        <td>Malware detection model >95% accuracy</td>
+                        <td>AI Review</td>
+                    </tr>
+                    <tr>
+                        <td>M7: UEBA Baseline</td>
+                        <td>11</td>
+                        <td>60-day behavioral baselines established</td>
+                        <td>Technical</td>
+                    </tr>
+                    <tr>
+                        <td>M8: Automation Live</td>
+                        <td>12</td>
+                        <td>50+ playbooks operational, 70% automation rate</td>
+                        <td>Operations</td>
+                    </tr>
+                    <tr>
+                        <td>M9: Team Ready</td>
+                        <td>13</td>
+                        <td>Full team hired, trained, and certified</td>
+                        <td>HR + Training</td>
+                    </tr>
+                    <tr>
+                        <td>M10: Pilot Success</td>
+                        <td>15</td>
+                        <td>95% detection, <10% false positives, <15min MTTD</td>
+                        <td>Executive</td>
+                    </tr>
+                    <tr>
+                        <td>M11: Go-Live</td>
+                        <td>16</td>
+                        <td>Production operations, 24x7 coverage active</td>
+                        <td>Executive</td>
+                    </tr>
+                    <tr>
+                        <td>M12: Project Closure</td>
+                        <td>18</td>
+                        <td>All departments onboarded, handover complete</td>
+                        <td>Executive</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Stage Gate Process</h2>
+            <div class="deliverables-grid">
+                <div class="deliverable-box">
+                    <h4>✅ Gate 1: Foundation (M2)</h4>
+                    <ul>
+                        <li>Architecture approved</li>
+                        <li>Vendors selected</li>
+                        <li>Budget confirmed</li>
+                        <li>Go/No-Go decision</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>✅ Gate 2: Build (M9)</h4>
+                    <ul>
+                        <li>All platforms deployed</li>
+                        <li>ML models trained</li>
+                        <li>Integration complete</li>
+                        <li>Proceed to pilot</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>✅ Gate 3: Pilot (M15)</h4>
+                    <ul>
+                        <li>Success criteria met</li>
+                        <li>Stakeholder approval</li>
+                        <li>Team operational</li>
+                        <li>Approve production</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>✅ Gate 4: Closure (M18)</h4>
+                    <ul>
+                        <li>Full deployment done</li>
+                        <li>Lessons learned</li>
+                        <li>Operations handover</li>
+                        <li>Project complete</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Resource Plan -->
+        <div class="slide">
+            <div class="slide-number">12</div>
+            <h1>Resource Allocation Plan</h1>
+            
+            <h2>Team Ramp-Up Schedule</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Role Category</th>
+                        <th>M1-5</th>
+                        <th>M6-10</th>
+                        <th>M11-13</th>
+                        <th>M14-18</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Project Management</td>
+                        <td>3</td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Leadership (Manager, AI Lead)</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>2</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>ML/AI Engineers</td>
+                        <td>0</td>
+                        <td>2</td>
+                        <td>7</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>Security Architects</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>4</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>Security Engineers</td>
+                        <td>0</td>
+                        <td>4</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Security Analysts</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>19</td>
+                        <td>19</td>
+                    </tr>
+                    <tr>
+                        <td>Support Staff</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>5</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>External Consultants</td>
+                        <td>5</td>
+                        <td>8</td>
+                        <td>4</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Team Size</strong></td>
+                        <td><strong>10</strong></td>
+                        <td><strong>21</strong></td>
+                        <td><strong>53</strong></td>
+                        <td><strong>50</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Budget Phasing (₹ Crores)</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>M1-6</th>
+                        <th>M7-12</th>
+                        <th>M13-18</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Infrastructure (CAPEX)</td>
+                        <td>8.45</td>
+                        <td>14.08</td>
+                        <td>5.63</td>
+                        <td>28.16</td>
+                    </tr>
+                    <tr>
+                        <td>Personnel (OPEX)</td>
+                        <td>1.30</td>
+                        <td>2.59</td>
+                        <td>3.89</td>
+                        <td>7.78</td>
+                    </tr>
+                    <tr>
+                        <td>Training & Services (OPEX)</td>
+                        <td>1.50</td>
+                        <td>2.00</td>
+                        <td>2.00</td>
+                        <td>5.50</td>
+                    </tr>
+                    <tr>
+                        <td>Operations (OPEX)</td>
+                        <td>0.50</td>
+                        <td>1.15</td>
+                        <td>1.60</td>
+                        <td>3.25</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Period Total</strong></td>
+                        <td><strong>11.75</strong></td>
+                        <td><strong>19.82</strong></td>
+                        <td><strong>13.12</strong></td>
+                        <td><strong>44.69</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-top: 25px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">Budget Release Schedule</h3>
+                <p style="font-size: 16px; line-height: 1.8; margin: 0;">
+                    <strong>Tranche 1 (M0):</strong> ₹1.41 Cr (5%) - Project initiation<br>
+                    <strong>Tranche 2 (M5):</strong> ₹7.04 Cr (25%) - Infrastructure complete<br>
+                    <strong>Tranche 3 (M10):</strong> ₹8.45 Cr (30%) - Platforms deployed<br>
+                    <strong>Tranche 4 (M14):</strong> ₹5.63 Cr (20%) - Integration done<br>
+                    <strong>Tranche 5 (M16):</strong> ₹2.82 Cr (10%) - Team trained<br>
+                    <strong>Tranche 6 (M18):</strong> ₹2.82 Cr (10%) - Go-live & closure
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Risk Management -->
+        <div class="slide">
+            <div class="slide-number">13</div>
+            <h1>Risk Management & Mitigation</h1>
+            
+            <h2>Top Implementation Risks</h2>
+            <div class="risk-matrix">
+                <div class="risk-card high">
+                    <div class="risk-level high">HIGH RISK</div>
+                    <h4>AI/ML Talent Shortage</h4>
+                    <p><strong>Impact:</strong> Delay in ML model development, reduced AI capabilities</p>
+                    <p class="mitigation"><strong>Mitigation:</strong> Early recruitment (M0), competitive compensation, partnerships with universities, external ML consulting contracts</p>
+                </div>
+                
+                <div class="risk-card high">
+                    <div class="risk-level high">HIGH RISK</div>
+                    <h4>GPU Hardware Delays</h4>
+                    <p><strong>Impact:</strong> Cannot train ML models, 2-3 month project delay</p>
+                    <p class="mitigation"><strong>Mitigation:</strong> Order GPUs in M1, confirm delivery commitments, cloud GPU backup plan, pre-order from multiple vendors</p>
+                </div>
+                
+                <div class="risk-card">
+                    <div class="risk-level medium">MEDIUM RISK</div>
+                    <h4>ML Model Performance</h4>
+                    <p><strong>Impact:</strong> High false positives, reduced trust in AI</p>
+                    <p class="mitigation"><strong>Mitigation:</strong> Extended pilot period, shadow mode validation, continuous tuning, fallback to traditional detection</p>
+                </div>
+                
+                <div class="risk-card">
+                    <div class="risk-level medium">MEDIUM RISK</div>
+                    <h4>Integration Complexity</h4>
+                    <p><strong>Impact:</strong> Delayed deployment, incomplete automation</p>
+                    <p class="mitigation"><strong>Mitigation:</strong> Proof-of-concept testing, phased integration, experienced integration partner, additional buffer time</p>
+                </div>
+                
+                <div class="risk-card">
+                    <div class="risk-level medium">MEDIUM RISK</div>
+                    <h4>Budget Overruns</h4>
+                    <p><strong>Impact:</strong> Feature reduction, scope compromise</p>
+                    <p class="mitigation"><strong>Mitigation:</strong> 10% contingency fund, fixed-price contracts, phased procurement, monthly cost tracking</p>
+                </div>
+                
+                <div class="risk-card">
+                    <div class="risk-level medium">MEDIUM RISK</div>
+                    <h4>Scope Creep</h4>
+                    <p><strong>Impact:</strong> Timeline delays, budget overrun</p>
+                    <p class="mitigation"><strong>Mitigation:</strong> Strict change control, clear scope definition, phase-wise feature delivery, stakeholder management</p>
+                </div>
+            </div>
+
+            <h2>Risk Monitoring & Control</h2>
+            <div class="deliverables-grid">
+                <div class="deliverable-box">
+                    <h4>Weekly Risk Review</h4>
+                    <ul>
+                        <li>Project team risk assessment</li>
+                        <li>New risks identification</li>
+                        <li>Mitigation status tracking</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>Monthly Steering Committee</h4>
+                    <ul>
+                        <li>High/critical risks escalation</li>
+                        <li>Mitigation plan approval</li>
+                        <li>Resource allocation decisions</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>Stage Gate Reviews</h4>
+                    <ul>
+                        <li>Comprehensive risk assessment</li>
+                        <li>Go/no-go decisions</li>
+                        <li>Contingency plan activation</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>Contingency Plans</h4>
+                    <ul>
+                        <li>Cloud GPU fallback</li>
+                        <li>Managed services option</li>
+                        <li>Phased deployment alternative</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Success Metrics -->
+        <div class="slide">
+            <div class="slide-number">14</div>
+            <h1>Success Metrics & KPIs</h1>
+            
+            <h2>Implementation Success Criteria</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Timeline</div>
+                    <div class="metric-value">18M</div>
+                    <div class="metric-label">On-Time Delivery</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Budget</div>
+                    <div class="metric-value">±5%</div>
+                    <div class="metric-label">Within Budget</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Scope</div>
+                    <div class="metric-value">100%</div>
+                    <div class="metric-label">All Features Delivered</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Quality</div>
+                    <div class="metric-value">95%+</div>
+                    <div class="metric-label">Acceptance Rate</div>
+                </div>
+            </div>
+
+            <h2>Operational Success Metrics (Post Go-Live)</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Target</th>
+                        <th>Measurement</th>
+                        <th>Review Frequency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Threat Detection Accuracy</td>
+                        <td>&gt;95%</td>
+                        <td>ML model validation</td>
+                        <td>Daily</td>
+                    </tr>
+                    <tr>
+                        <td>False Positive Rate</td>
+                        <td>&lt;10%</td>
+                        <td>Alert analysis</td>
+                        <td>Daily</td>
+                    </tr>
+                    <tr>
+                        <td>Mean Time to Detect (MTTD)</td>
+                        <td>&lt;15 minutes</td>
+                        <td>Incident timestamps</td>
+                        <td>Real-time</td>
+                    </tr>
+                    <tr>
+                        <td>Mean Time to Respond (MTTR)</td>
+                        <td>&lt;1 hour</td>
+                        <td>Response completion</td>
+                        <td>Real-time</td>
+                    </tr>
+                    <tr>
+                        <td>Automation Rate</td>
+                        <td>&gt;70%</td>
+                        <td>Auto vs manual actions</td>
+                        <td>Weekly</td>
+                    </tr>
+                    <tr>
+                        <td>SOC Availability</td>
+                        <td>99.9%</td>
+                        <td>System uptime</td>
+                        <td>24x7</td>
+                    </tr>
+                    <tr>
+                        <td>Asset Coverage</td>
+                        <td>100%</td>
+                        <td>Monitored assets</td>
+                        <td>Daily</td>
+                    </tr>
+                    <tr>
+                        <td>Events Processed</td>
+                        <td>&gt;10M/day</td>
+                        <td>SIEM throughput</td>
+                        <td>Real-time</td>
+                    </tr>
+                    <tr>
+                        <td>ML Model Drift</td>
+                        <td>&lt;5%</td>
+                        <td>Model monitoring</td>
+                        <td>Weekly</td>
+                    </tr>
+                    <tr>
+                        <td>Team Utilization</td>
+                        <td>70-85%</td>
+                        <td>Workload analysis</td>
+                        <td>Monthly</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="cta-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h3>Continuous Improvement</h3>
+                <p>Weekly ML model retraining • Monthly performance reviews • Quarterly capability enhancements</p>
+            </div>
+        </div>
+
+        <!-- Slide 15: Governance & Communication -->
+        <div class="slide">
+            <div class="slide-number">15</div>
+            <h1>Governance & Communication Plan</h1>
+            
+            <h2>Governance Structure</h2>
+            <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; margin: 25px 0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <strong style="font-size: 20px;">Steering Committee</strong><br>
+                        <span style="font-size: 14px;">Senior Leadership • Monthly Reviews • Strategic Decisions</span>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <strong style="font-size: 18px;">Project Management Office (PMO)</strong><br>
+                        <span style="font-size: 14px;">Program Manager • Weekly Coordination • Risk Management</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                        <div style="background: #28a745; color: white; padding: 20px; border-radius: 10px;">
+                            <strong>Technical Team</strong><br>
+                            <span style="font-size: 13px;">Architecture<br>Development<br>Integration</span>
+                        </div>
+                        <div style="background: #ffc107; color: #000; padding: 20px; border-radius: 10px;">
+                            <strong>AI/ML Team</strong><br>
+                            <span style="font-size: 13px;">Model Dev<br>Training<br>MLOps</span>
+                        </div>
+                        <div style="background: #17a2b8; color: white; padding: 20px; border-radius: 10px;">
+                            <strong>Operations Team</strong><br>
+                            <span style="font-size: 13px;">Infrastructure<br>Deployment<br>Support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Communication Plan</h2>
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th>Audience</th>
+                        <th>Frequency</th>
+                        <th>Format</th>
+                        <th>Content</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Steering Committee</td>
+                        <td>Monthly</td>
+                        <td>Executive Presentation</td>
+                        <td>Status, risks, decisions needed, budget</td>
+                    </tr>
+                    <tr>
+                        <td>Project Team</td>
+                        <td>Weekly</td>
+                        <td>Status Meeting</td>
+                        <td>Progress, blockers, next steps</td>
+                    </tr>
+                    <tr>
+                        <td>Technical Teams</td>
+                        <td>Daily</td>
+                        <td>Standup</td>
+                        <td>Daily updates, quick sync</td>
+                    </tr>
+                    <tr>
+                        <td>Stakeholders</td>
+                        <td>Bi-weekly</td>
+                        <td>Email Update</td>
+                        <td>Progress summary, upcoming milestones</td>
+                    </tr>
+                    <tr>
+                        <td>End Users</td>
+                        <td>Monthly</td>
+                        <td>Newsletter</td>
+                        <td>Feature previews, training schedules</td>
+                    </tr>
+                    <tr>
+                        <td>Executive Leadership</td>
+                        <td>Quarterly</td>
+                        <td>Business Review</td>
+                        <td>Strategic alignment, ROI, roadmap</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Change Management</h2>
+            <div class="deliverables-grid">
+                <div class="deliverable-box">
+                    <h4>Awareness Building</h4>
+                    <ul>
+                        <li>SOC capability presentations</li>
+                        <li>AI security benefits</li>
+                        <li>Department briefings</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>Training Programs</h4>
+                    <ul>
+                        <li>End-user awareness</li>
+                        <li>Department coordinators</li>
+                        <li>Security champions</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>Adoption Support</h4>
+                    <ul>
+                        <li>Help desk setup</li>
+                        <li>Documentation portal</li>
+                        <li>Onboarding assistance</li>
+                    </ul>
+                </div>
+                <div class="deliverable-box">
+                    <h4>Feedback Loops</h4>
+                    <ul>
+                        <li>User surveys</li>
+                        <li>Continuous improvement</li>
+                        <li>Feature requests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Call to Action -->
+        <div class="slide title-slide">
+            <h1 style="font-size: 56px;">Ready to Launch</h1>
+            <div class="subtitle" style="font-size: 28px; margin: 40px 0;">
+                18-Month Journey to India's Most<br>
+                Advanced State-Level AI-Powered SOC
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.2); padding: 40px; border-radius: 15px; margin: 40px 0;">
+                <h3 style="color: white; font-size: 32px; margin-bottom: 25px;">Next Steps</h3>
+                <p style="font-size: 20px; line-height: 2; text-align: left; max-width: 800px; margin: 0 auto;">
+                    ✓ Approve detailed project plan<br>
+                    ✓ Allocate budget tranches<br>
+                    ✓ Establish Project Management Office<br>
+                    ✓ Initiate vendor procurement (M1)<br>
+                    ✓ Begin strategic hiring (M0)
+                </p>
+            </div>
+
+            <div class="cta-box" style="background: rgba(255,255,255,0.95); margin-top: 40px;">
+                <h3 style="color: #1e3c72;">Project Kickoff Target</h3>
+                <p style="color: #2a5298; font-size: 24px; margin-top: 15px;"><strong>[Target Date]</strong></p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
